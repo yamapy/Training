@@ -2,6 +2,7 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,9 +13,19 @@ import beans.Expense;
 
 public class ExpenseDAO {
 
-	public static final String SELECT_ALL_QUERY="select EX.APPLICATION_ID,EX.APPLICATION_DATE,EX.UPDATE_DATE,EX.APPLICANT,EX.TITLE,EX.AMOUNT,EX.STATUS"
-	                       +" from EXPENSE EX";
+	public static final String SELECT_ALL_QUERY="select EX.APPLICATION_ID \n" +
+			", EX.APPLICATION_DATE \n" +
+			", EX.UPDATE_DATE \n" +
+			", EX.APPLICANT \n" +
+			", EX.TITLE \n" +
+			", EX.AMOUNT \n" +
+			", EX.STATUS \n" +
+			", EX.CHANGER \n" +
+			", EX.PAYEE \n" +
+			"from  \n" +
+			"EXPENSE EX \n";
 	private static final String SELECT_BY_ID_QUERY = SELECT_ALL_QUERY + " WHERE EX.APPLICATION_ID = ?";
+	private static final String DELETE_QUERY = "DELETE FROM EXPENSE WHERE ID = ?";
 
 
 
@@ -53,6 +64,8 @@ public class ExpenseDAO {
 		result.setTitle(rs.getString("TITLE"));
 		result.setAmount(rs.getInt("AMOUNT"));
 		result.setStatus(rs.getString("STATUS"));
+		result.setPayee(rs.getString("PAYEE"));
+		result.setChanger(rs.getString("CHANGER"));
 
 		Date appDate = rs.getDate("APPLICATION_DATE");
 		if (appDate != null) {
@@ -63,13 +76,81 @@ public class ExpenseDAO {
 			result.setUpdateDate(updateDate.toString());
 		}
 
-		// 入れ子のオブジェクトの再現
-		//Post post = new Post();
-		//post.setId(rs.getInt("POSTID"));
-		//post.setName(rs.getString("POST_NAME"));
-		//result.setPost(post);
+
 
 		return result;
+	}
+
+	public Expense findById(int id) {
+		Expense result = null;
+
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return result;
+		}
+
+		try (PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID_QUERY)) {
+			statement.setInt(1, id);
+
+			ResultSet rs = statement.executeQuery();
+
+			if (rs.next()) {
+				result = processRow(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return result;
+	}
+
+	public boolean remove(int id) {
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return false;
+		}
+
+		int count = 0;
+		try (PreparedStatement statement = connection.prepareStatement(DELETE_QUERY)) {
+			// DELETE実行
+			statement.setInt(1, id);
+			count = statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+		return count == 1;
+	}
+
+	private void setParameter(PreparedStatement statement, Expense expense, boolean forUpdate) throws SQLException {
+		int count = 1;
+
+		statement.setString(count++, expense.getId());
+		statement.setString(count++, expense.getAppDate());
+		statement.setString(count++, expense.getUpdateDate());
+		statement.setString(count++, expense.getApplicant());
+		statement.setString(count++, expense.getTitle());
+		statement.setInt(count++, expense.getAmount());
+		statement.setString(count++, expense.getStatus());
+		statement.setString(count++, expense.getPayee());
+		statement.setString(count++, expense.getChanger());
+//		if (expense.getAppDate() != null) {
+//			statement.setDate(count++, Date.valueOf(expense.getAppDate()));
+//		} else {
+//			statement.setDate(count++, null);
+//		}
+//		if (expense.getUpdateDate() != null) {
+//			statement.setDate(count++, Date.valueOf(expense.getUpdateDate()));
+//		} else {
+//			statement.setDate(count++, null);
+//		}
+
+		//if (forUpdate) {
+			//statement.setInt(count++, employee.getId());
+		//}
 	}
 
 
