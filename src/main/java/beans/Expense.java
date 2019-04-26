@@ -9,6 +9,7 @@ public class Expense {
 	private int amount;
 	private String status;
 	private String payee;
+	private String changer;
 
 	public String getId(){
 		return id;
@@ -64,5 +65,12 @@ public class Expense {
 	}
 	public void setPayee(String payee) {
 		this.payee = payee;
+	}
+
+	public String getChanger(){
+		return changer;
+	}
+	public void setChanger(String changer) {
+		this.changer = changer;
 	}
 }
