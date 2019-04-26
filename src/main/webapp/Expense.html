@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>経費管理ページ</title>
+</head>
+<body>
+	<div class="main">
+		<div id="expList">
+			<p>経費一覧:</p>
+			<div id="expense"></div>
+			<div id="insertBlock">
+				<button type="button" id="registExpense">経費登録</button>
+			</div>
+		</div>
+		<div id="detail">
+			<p>経費詳細：</p>
+			<form id="expenseForm" enctype="multipart/form-data">
+				<div class="error"></div>
+				<div>
+					<label for="appId">申請ID:</label> <input type="text" name="appId"
+						id="appId">
+				</div>
+				<div>
+					<label for="appDate">申請日:</label> <input type="text" name="appDate"
+						id="appDate">
+				</div>
+				<div>
+					<label for="updateDate">更新日:</label> <input type="text"
+						name="updateDate" id="updateDate">
+				</div>
+				<div>
+					<label for="applicant">申請者:</label> <input type="text"
+						name="applicant" id="applicant">
+				</div>
+				<div>
+					<label for="title">タイトル:</label> <input type="text" name="title"
+						id="title">
+				</div>
+				<div>
+					<label for="amount">金額:</label> <input type="text" name="amount"
+						id="amount">
+				</div>
+				<div>
+					<label for="status">ステータス:</label>
+					<select name="status" id="status">
+						<option value="申請中">申請中</option>
+						<option value="承認済み">承認済み</option>
+					</select>
+				</div>
+				<div>
+					<button id="saveExpense">保存</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/expense.js"></script>
+</body>
+</html>
