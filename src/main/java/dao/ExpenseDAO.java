@@ -23,7 +23,8 @@ public class ExpenseDAO {
 			", EX.CHANGER \n" +
 			", EX.PAYEE \n" +
 			"from  \n" +
-			"EXPENSE EX \n";
+			"EXPENSE EX \n"+
+			"ORDER BY EX.APPLICATION_ID \n";
 	private static final String SELECT_BY_ID_QUERY = SELECT_ALL_QUERY + " WHERE EX.APPLICATION_ID = ?";
 	private static final String DELETE_QUERY = "DELETE FROM EXPENSE WHERE APPLICATION_ID = ?";
 	private static final String INSERT_QUERY = "INSERT INTO "
@@ -31,7 +32,7 @@ public class ExpenseDAO {
 			+"VALUES(?,?,?,?,?,?,?,?,?)";
 	private static final String UPDATE_QUERY = "UPDATE EXPENSE "
 			+"SET APPLICATION_ID=?,APPLICATION_DATE=?,UPDATE_DATE=?,APPLICANT=?,TITLE=?,PAYEE=?,AMOUNT=?,"
-			+"STATUS=?,CHANGER=? WHERE ID = ?";
+			+"STATUS=?,CHANGER=? WHERE APPLICATION_ID = ?";
 
 
 
@@ -57,6 +58,18 @@ public class ExpenseDAO {
 
 		return result;
 	}
+
+	public boolean create_or_update (String id){
+		List<Expense> result = findAll();
+		for(  Expense exp : result ){
+			if(exp.getId().equals(id)){
+				return true;
+			}
+
+
+		}
+		return false;
+ 	}
 
 
 	private Expense processRow(ResultSet rs) throws SQLException {
@@ -143,6 +156,10 @@ public class ExpenseDAO {
 		statement.setInt(count++, expense.getAmount());
 		statement.setString(count++, expense.getStatus());
 		statement.setString(count++, expense.getChanger());
+
+		if (forUpdate) {
+			statement.setString(count++, expense.getId());
+		}
 
 	}
 

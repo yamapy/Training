@@ -114,11 +114,16 @@ function renderTable(data) {
 			row.append($('<td>').text(expense.amount));
 			row.append($('<td>').text(expense.status));
 			row.append($('<td>').append(
+					$('<button>').text("詳細").attr("type","button").attr("onclick", "detailById("+expense.id+')')
+			));
+
+			row.append($('<td>').append(
 					$('<button>').text("編集").attr("type","button").attr("onclick", "findById("+expense.id+')')
 			));
 			row.append($('<td>').append(
 					$('<button>').text("削除").attr("type","button").attr("onclick", "deleteById("+expense.id+')')
 			));
+
 
 
 			table.append(row);
@@ -156,6 +161,5 @@ function renderDetails(expense) {
 	$('#payee').val(expense.payee);
 	$('#amount').val(expense.amount);
 	$('#status').val(expense.status);
-//	$('input[name="status"]').val([ expense.status ]);
 	$('#changer').val(expense.changer);
 }
