@@ -25,7 +25,13 @@ public class ExpenseDAO {
 			"from  \n" +
 			"EXPENSE EX \n";
 	private static final String SELECT_BY_ID_QUERY = SELECT_ALL_QUERY + " WHERE EX.APPLICATION_ID = ?";
-	private static final String DELETE_QUERY = "DELETE FROM EXPENSE WHERE ID = ?";
+	private static final String DELETE_QUERY = "DELETE FROM EXPENSE WHERE APPLICATION_ID = ?";
+	private static final String INSERT_QUERY = "INSERT INTO "
+			+"EXPENSE(APPLICATION_ID,APPLICATION_DATE,UPDATE_DATE,APPLICANT,TITLE,PAYEE,AMOUNT,STATUS,CHANGER) "
+			+"VALUES(?,?,?,?,?,?,?,?,?)";
+	private static final String UPDATE_QUERY = "UPDATE EXPENSE "
+			+"SET APPLICATION_ID=?,APPLICATION_DATE=?,UPDATE_DATE=?,APPLICANT=?,TITLE=?,PAYEE=?,AMOUNT=?,"
+			+"STATUS=?,CHANGER=? WHERE ID = ?";
 
 
 
@@ -129,29 +135,63 @@ public class ExpenseDAO {
 		int count = 1;
 
 		statement.setString(count++, expense.getId());
-		statement.setString(count++, expense.getAppDate());
-		statement.setString(count++, expense.getUpdateDate());
+		statement.setDate(count++,  Date.valueOf( expense.getAppDate()) );
+		statement.setDate(count++, Date.valueOf(expense.getUpdateDate()) );
 		statement.setString(count++, expense.getApplicant());
 		statement.setString(count++, expense.getTitle());
+		statement.setString(count++, expense.getPayee());
 		statement.setInt(count++, expense.getAmount());
 		statement.setString(count++, expense.getStatus());
-		statement.setString(count++, expense.getPayee());
 		statement.setString(count++, expense.getChanger());
-//		if (expense.getAppDate() != null) {
-//			statement.setDate(count++, Date.valueOf(expense.getAppDate()));
-//		} else {
-//			statement.setDate(count++, null);
-//		}
-//		if (expense.getUpdateDate() != null) {
-//			statement.setDate(count++, Date.valueOf(expense.getUpdateDate()));
-//		} else {
-//			statement.setDate(count++, null);
-//		}
 
-		//if (forUpdate) {
-			//statement.setInt(count++, employee.getId());
-		//}
 	}
+
+
+	public Expense create(Expense expense) {
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return expense;
+		}
+
+		try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY/**, new String[] { "ID" }**/);) {
+			// INSERT実行
+			setParameter(statement, expense, false);
+			statement.executeUpdate();
+
+			// INSERTできたらKEYを取得
+			ResultSet rs = statement.getGeneratedKeys();
+			rs.next();
+			String id = rs.getString(1);
+			expense.setId(id);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return expense;
+	}
+
+
+
+	public Expense update(Expense expense) {
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return expense;
+		}
+
+		try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+			setParameter(statement, expense, true);
+			statement.executeUpdate();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return expense;
+	}
+
 
 
 }
