@@ -23,8 +23,9 @@ public class ExpenseDAO {
 			", EX.CHANGER \n" +
 			", EX.PAYEE \n" +
 			"from  \n" +
-			"EXPENSE EX \n"+
-			"ORDER BY EX.APPLICATION_ID \n";
+			"EXPENSE EX \n"
+//			"ORDER BY EX.APPLICATION_ID \n"
+			;
 	private static final String SELECT_BY_ID_QUERY = SELECT_ALL_QUERY + " WHERE EX.APPLICATION_ID = ?";
 	private static final String DELETE_QUERY = "DELETE FROM EXPENSE WHERE APPLICATION_ID = ?";
 	private static final String INSERT_QUERY = "INSERT INTO "

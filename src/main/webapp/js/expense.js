@@ -27,6 +27,7 @@ function findById(id) {
 	});
 }
 
+
 function deleteById(id) {
 	console.log('delete start - id:' + id);
 	$.ajax({
@@ -113,9 +114,6 @@ function renderTable(data) {
 			row.append($('<td>').text(expense.title));
 			row.append($('<td>').text(expense.amount));
 			row.append($('<td>').text(expense.status));
-			row.append($('<td>').append(
-					$('<button>').text("詳細").attr("type","button").attr("onclick", "detailById("+expense.id+')')
-			));
 
 			row.append($('<td>').append(
 					$('<button>').text("編集").attr("type","button").attr("onclick", "findById("+expense.id+')')
